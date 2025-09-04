@@ -17,7 +17,7 @@ class BlockResource extends Resource
     protected static ?string $model = Block::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Content Management';
+    protected static ?string $navigationGroup = 'Site Content Management';
     protected static ?string $navigationLabel = 'Blocks';
 
     public static function form(Form $form): Form

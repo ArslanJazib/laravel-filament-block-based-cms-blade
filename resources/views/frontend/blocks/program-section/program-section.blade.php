@@ -1,4 +1,5 @@
 @php
+    use App\Models\Category;
 
     $raw = $data ?? ($content ?? ($block->content ?? []));
 
@@ -24,7 +25,8 @@
 
     $programs = $payload['programs'] ?? [];
 
-    $classMap = ['mind', 'soul', 'body', 'entrepreneur'];
+    $categories = Category::orderBy('id')->get();
+    $classMap = $categories->pluck('slug')->toArray();
 
     $resolveImage = function ($img) use ($blockSlug) {
         if (empty($img)) {
