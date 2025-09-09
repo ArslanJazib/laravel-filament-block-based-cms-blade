@@ -101,6 +101,7 @@ class UsersTableSeeder extends Seeder
                 'country_id' => $data['country_id'],
             ]);
 
+            // Assign role via Spatie
             $user->assignRole($data['role']);
         }
     }

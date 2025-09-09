@@ -21,8 +21,8 @@ Homestead.json
 Homestead.yaml
 
 # Composer
-/composer.lock
-/composer.phar
+composer.lock
+composer.phar
 
 # Frontend (NPM/Yarn/PNPM/Vite)
 package-lock.json

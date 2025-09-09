@@ -2,20 +2,40 @@
 
 namespace App\Models;
 
+use App\Models\Enrollment;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Course extends Model
 {
-    public function category() {
+    use HasFactory;
+
+    protected $fillable = ['category_id', 'instructor_id', 'title', 'slug', 'description', 'status', 'thumbnail'];
+
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
-    public function instructor() {
+
+    public function instructor()
+    {
         return $this->belongsTo(User::class, 'instructor_id');
     }
-    public function lessons() {
+
+    public function topics()
+    {
+        return $this->hasMany(Topic::class);
+    }
+
+    public function lessons()
+    {
         return $this->hasMany(Lesson::class);
     }
-    public function students() {
-        return $this->belongsToMany(User::class, 'enrollments');
+
+    public function enrollments()
+    {
+    
+        return $this->hasMany(Enrollment::class);
     }
 }
+
