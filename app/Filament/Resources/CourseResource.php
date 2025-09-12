@@ -8,6 +8,8 @@ use App\Models\Course;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CourseResource\Pages;
 use App\Filament\Resources\CourseResource\RelationManagers\TopicsRelationManager;
 use App\Filament\Resources\CourseResource\RelationManagers\LessonsRelationManager;
@@ -18,6 +20,20 @@ class CourseResource extends Resource
     protected static ?string $model = Course::class;
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
     protected static ?string $navigationGroup = 'LMS Management';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+
+        if ($user && $user->role('instructor')) {
+            $query = $query->where('instructor_id', $user->id);
+        }
+
+        return $query;
+
+    }
 
     public static function form(Form $form): Form
     {

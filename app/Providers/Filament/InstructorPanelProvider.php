@@ -18,6 +18,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+// import only the resources you want for Instructors
+use App\Filament\Resources\CourseResource;
+
 class InstructorPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -27,10 +30,12 @@ class InstructorPanelProvider extends PanelProvider
             ->path('instructor')
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Indigo,
             ])
-            ->discoverResources(in: app_path('Filament/Instructor/Resources'), for: 'App\\Filament\\Instructor\\Resources')
-            ->discoverPages(in: app_path('Filament/Instructor/Pages'), for: 'App\\Filament\\Instructor\\Pages')
+            ->resources([
+                CourseResource::class,
+            ])
+            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
