@@ -29,22 +29,52 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        try {
+            $request->validate([
+                'name'              => ['required', 'string', 'max:255'],
+                'username'          => ['required', 'string', 'max:255', 'unique:'.User::class],
+                'email'             => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+                'phone'             => ['nullable', 'string', 'max:191'],
+                'password'          => ['required', 'confirmed', Rules\Password::defaults()],
+                'security_questions'=> ['nullable', 'array'], // JSON
+                'company_name'      => ['nullable', 'string', 'max:191'],
+                'job_title'         => ['nullable', 'string', 'max:191'],
+                'country_id'        => ['nullable', 'exists:countries,id'],
+            ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+            $user = User::create([
+                'name'               => $request->name,
+                'email'              => $request->email,
+                'username'           => $request->username,
+                'phone'              => $request->phone,
+                'password'           => Hash::make($request->password),
+                'security_questions' => $request->filled('security_questions')
+                                            ? json_encode($request->security_questions)
+                                            : null,
+                'company_name'       => $request->company_name,
+                'job_title'          => $request->job_title,
+                'country_id'         => $request->country_id,
+            ]);
 
-        event(new Registered($user));
+            $user->assignRole('user');
 
-        Auth::login($user);
+            event(new Registered($user));
 
-        return redirect(route('dashboard', absolute: false));
+            Auth::guard('web')->login($user);
+
+            return redirect()
+                ->route('courses.index')
+                ->with('success', 'Welcome! You are now registered and logged in.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()
+                ->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Registration failed: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 }

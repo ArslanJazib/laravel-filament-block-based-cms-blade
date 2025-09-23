@@ -35,13 +35,46 @@ class LessonsRelationManager extends RelationManager
 
             Forms\Components\TextInput::make('video_url')->nullable(),
 
-            Forms\Components\FileUpload::make('resource_file')
+            Forms\Components\FileUpload::make('resource_files')
+                ->label('Resource Files')
                 ->directory('lessons/resources')
+                ->multiple()
+                ->downloadable()
+                ->openable()
+                ->acceptedFileTypes([
+                    // Documents
+                    'application/pdf',
+                    'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+
+                    // Excel
+                    'application/vnd.ms-excel',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+
+                    // PowerPoint
+                    'application/vnd.ms-powerpoint',
+                    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+
+                    // Text
+                    'text/plain',
+
+                    // Images
+                    'image/jpeg',
+                    'image/png',
+                    'image/gif',
+                    'image/webp',
+                ])
                 ->nullable(),
 
             Forms\Components\TextInput::make('order')
                 ->numeric()
                 ->default(0),
+
+            Forms\Components\TextInput::make('duration')
+                ->label('Approx Duration (minutes)')
+                ->numeric()
+                ->minValue(1)
+                ->nullable(),
         ]);
     }
 
@@ -52,6 +85,7 @@ class LessonsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('title')->searchable(),
                 Tables\Columns\TextColumn::make('topic.title')->label('Topic'),
                 Tables\Columns\TextColumn::make('order')->sortable(),
+                Tables\Columns\TextColumn::make('duration')->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->dateTime(),
             ])
             ->headerActions([

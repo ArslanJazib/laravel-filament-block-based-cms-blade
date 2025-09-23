@@ -22,9 +22,4 @@ document.addEventListener("DOMContentLoaded", () => {
             updateStep(currentStep);
         }
     }));
-
-    document.getElementById("multiStepForm").addEventListener("submit", e => {
-        e.preventDefault();
-        alert("Form submitted successfully!");
-    });
 });

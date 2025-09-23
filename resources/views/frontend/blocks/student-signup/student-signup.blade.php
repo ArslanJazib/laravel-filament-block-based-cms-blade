@@ -1,3 +1,23 @@
+@guest
+
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
+@if($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 @php
     $raw = $data ?? ($content ?? ($block->content ?? []));
 
@@ -42,7 +62,7 @@
             </ul>
         @endif
 
-        <form id="multiStepForm" method="POST" action="">
+        <form id="multiStepForm" method="POST" action="{{ route('register') }}">
             @csrf
 
             @foreach($steps as $i => $step)
@@ -89,3 +109,5 @@
         </form>
     </div>
 </section>
+
+@endguest

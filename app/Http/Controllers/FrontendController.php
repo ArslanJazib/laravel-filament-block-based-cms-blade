@@ -14,7 +14,7 @@ class FrontendController extends Controller
      * @param string $slug
      * @return \Illuminate\View\View
      */
-    public function page(string $slug = 'home')
+    public function page(string $slug = '/')
     {
         // Get site settings
         $siteSettings = SiteSetting::first();
