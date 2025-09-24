@@ -37,5 +37,29 @@ class Course extends Model
     
         return $this->hasMany(Enrollment::class);
     }
+
+    public function comments()
+    {
+        return $this->hasManyThrough(CourseComment::class, Lesson::class, 'course_id', 'lesson_id');
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(CourseRating::class);
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return $this->ratings()->avg('rating') ?? 0;
+    }
+
+    public function latestFeedback($limit = 5)
+    {
+        return $this->ratings()
+            ->with('user')
+            ->latest()
+            ->take($limit)
+            ->get();
+    }
 }
 

@@ -29,11 +29,20 @@
     {{-- Bootstrap Icons --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
+    {{-- Video JS --}}
+    <link href="https://vjs.zencdn.net/8.12.0/video-js.css" rel="stylesheet" />
+
     {{-- Global Styles --}}
     <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
 
     {{-- Dynamic Block CSS --}}
     @stack('block-styles')
+
+    {{-- Video JS --}}
+    <script src="https://vjs.zencdn.net/8.12.0/video.min.js"></script>
+
+    {{-- jQuery (latest stable) --}}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     {{-- Google Tag Manager --}}
     {!! $siteSettings->google_tag_manager !!}
@@ -84,6 +93,12 @@
                         <li>
                             <a class="dropdown-item" href="{{ route('student.profile.edit') }}">
                                 <i class="bi bi-person-lines-fill me-2"></i> Profile
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('student.enrolled.index') }}">
+                                <i class="bi bi-bookshelf me-2"></i> My Learning
                             </a>
                         </li>
                         <li><hr class="dropdown-divider"></li>

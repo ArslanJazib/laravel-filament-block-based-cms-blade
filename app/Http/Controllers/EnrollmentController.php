@@ -13,7 +13,7 @@ class EnrollmentController extends Controller
         $user = $request->user();
 
         // Check if already enrolled
-        if ($course->enrollments()->where('user_id', $user->id)->exists()) {
+        if ($course->enrollments()->where('student_id', $user->id)->exists()) {
             return redirect()->route('courses.show', $course->slug)
                 ->with('info', 'You are already enrolled in this course.');
         }

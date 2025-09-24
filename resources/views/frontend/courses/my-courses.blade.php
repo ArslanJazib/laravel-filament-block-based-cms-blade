@@ -33,7 +33,7 @@
                             <p class="text-muted small flex-grow-1">
                                 {{ Str::limit($course->description, 100) }}
                             </p>
-                            <a href="{{ route('student.enrolled.show', $course->id) }}" 
+                            <a href="{{ route('courses.show', $course->slug) }}" 
                                class="btn btn-primary btn-sm mt-3">
                                 Continue Learning
                             </a>

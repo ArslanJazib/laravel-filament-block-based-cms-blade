@@ -24,4 +24,9 @@ class Lesson extends Model
     {
         return $this->belongsTo(Topic::class);
     }
+
+    public function progress()
+    {
+        return $this->belongsTo(Progress::class);
+    }
 }
