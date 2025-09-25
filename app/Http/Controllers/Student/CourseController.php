@@ -28,38 +28,67 @@ class CourseController extends Controller
     /**
      * Show a specific lesson inside an enrolled course
      */
-    public function lesson(Course $course, Lesson $lesson = null)
+    public function lesson(Course $course, Lesson $lesson)
     {
-        $student = Auth::user();
-
-        // Ensure student is enrolled
-        if (!$course->enrollments()->where('student_id', $student->id)->exists()) {
-            return redirect()
-                ->route('courses.show', $course->slug)
-                ->with('error', 'You must enroll in this course to access lessons.');
-        }
-
-        // If no lesson is passed, find the next incomplete lesson
-        if (!$lesson) {
-            $lesson = $course->lessons()
-                ->leftJoin('progresses', function ($join) use ($student) {
-                    $join->on('lessons.id', '=', 'progresses.lesson_id')
-                        ->where('progresses.student_id', '=', $student->id);
-                })
-                ->orderByRaw("COALESCE(progresses.progress_percent, 0) ASC") // lowest progress first
-                ->orderBy('lessons.position', 'ASC') // fallback order
-                ->select('lessons.*')
-                ->first();
-        }
-
-        // Fetch progress for current lesson
-        $progress = $lesson ? $lesson->progress()->where('student_id', $student->id)->first() : null;
-
-        return view('frontend.courses.enrolled', [
-            'course' => $course,
-            'currentLesson' => $lesson,
-            'progress' => $progress,
+        // Eager load course with relationships
+        $course->load([
+            'category',
+            'instructor',
+            'topics.lessons',
+            'comments' => fn($q) => $q->latest()->take(5)->with('user'),
+            'ratings'  => fn($q) => $q->latest()->take(5)->with('user'),
         ]);
+
+        // If user is logged in and enrolled
+        if (auth()->check() && $course->enrollments()->where('student_id', auth()->id())->exists()) {
+            $studentId = auth()->id();
+
+            // If a specific lesson is passed, use that
+            if ($lesson && $lesson->course_id === $course->id) {
+                $currentLesson = $lesson;
+            } else {
+                // Otherwise: Get most recently accessed *incomplete* lesson
+                $currentLesson = Lesson::where('course_id', $course->id)
+                    ->leftJoin('progress as p', function ($join) use ($studentId) {
+                        $join->on('lessons.id', '=', 'p.lesson_id')
+                            ->where('p.student_id', '=', $studentId);
+                    })
+                    ->where(function ($q) {
+                        $q->whereNull('p.completed')
+                        ->orWhere('p.completed', false)
+                        ->orWhere('p.progress_percent', '<', 100);
+                    })
+                    ->orderByDesc('p.last_accessed_at') // last played
+                    ->orderBy('lessons.topic_id', 'ASC')  // keep topic order
+                    ->orderBy('lessons.order', 'ASC')     // fallback lesson order
+                    ->select('lessons.*')
+                    ->first();
+
+                // Fallback to first lesson if none found
+                if (! $currentLesson) {
+                    $currentLesson = $course->lessons()->orderBy('order', 'asc')->first();
+                }
+            }
+
+            // Fetch progress for that lesson
+            $progress = $currentLesson
+                ? Progress::where('student_id', $studentId)
+                    ->where('lesson_id', $currentLesson->id)
+                    ->first()
+                : null;
+
+            // Get recent comments & ratings (already eager loaded)
+            $recentComments = $course->comments;
+            $recentRatings  = $course->ratings;
+
+            return view('frontend.courses.enrolled', compact(
+                'course',
+                'progress',
+                'currentLesson',
+                'recentComments',
+                'recentRatings'
+            ));
+        }
     }
 
     /**

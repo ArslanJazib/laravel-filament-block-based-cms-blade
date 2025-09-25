@@ -32,77 +32,118 @@
                         <p class="text-muted">No video available for this lesson.</p>
                     @endif
 
-                    <!-- Downloadable Resources -->
-                    @if($currentLesson && $currentLesson->resources && count($currentLesson->resources))
-                        <h6 class="fw-semibold">Resources</h6>
-                        <ul class="list-group list-group-flush mb-3">
-                            @foreach($currentLesson->resources as $resource)
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ basename($resource) }}
-                                    <a href="{{ asset('storage/' . $resource) }}" 
-                                       download 
-                                       class="btn btn-sm btn-outline-primary">
-                                       Download
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endif
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs mb-3" id="lessonTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="true">
+                                Notes
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="resources-tab" data-bs-toggle="tab" data-bs-target="#resources" type="button" role="tab" aria-controls="resources" aria-selected="false">
+                                Resources
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button" role="tab" aria-controls="comments" aria-selected="false">
+                                Comments
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="ratings-tab" data-bs-toggle="tab" data-bs-target="#ratings" type="button" role="tab" aria-controls="ratings" aria-selected="false">
+                                Ratings & Feedback
+                            </button>
+                        </li>
+                    </ul>
 
-                    <!-- Comments Section -->
-                    <div class="mt-4">
-                        <h6 class="fw-semibold">Comments</h6>
-                        <form method="POST" action="{{ route('student.enrolled.comment', [$course->id, $currentLesson->id]) }}">
-                            @csrf
-                            <textarea name="comment" class="form-control mb-2" rows="3" placeholder="Add a comment..."></textarea>
-                            <button type="submit" class="btn btn-sm btn-primary">Post Comment</button>
-                        </form>
-
-                        <div class="mt-3">
-                            @forelse($recentComments as $comment)
-                                <div class="border p-2 rounded mb-2">
-                                    <strong>{{ $comment->user->name }}</strong>
-                                    <p class="mb-0">{{ $comment->content }}</p>
-                                    <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                    <div class="tab-content" id="lessonTabContent">
+                        <!-- Notes Tab -->
+                        <div class="tab-pane fade show active" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                            @if($currentLesson && $currentLesson->content)
+                                <div class="mt-3">
+                                    {{-- Tailwind Typography for rich content --}}
+                                    <div class="prose max-w-full">
+                                        {!! html_entity_decode($currentLesson->content) !!}
+                                    </div>
                                 </div>
-                            @empty
-                                <p class="text-muted">No comments yet.</p>
-                            @endforelse
+                            @else
+                                <p class="text-muted">No notes available for this lesson.</p>
+                            @endif
                         </div>
-                    </div>
 
-                    <!-- Rating Section -->
-                    <div class="mt-4">
-                        <h6 class="fw-semibold">Rate this Course</h6>
-                        <form method="POST" action="{{ route('student.enrolled.rate', $course->id) }}">
-                            @csrf
-                            <select name="rating" class="form-select w-25 mb-2">
-                                <option value="">Select Rating</option>
-                                @for($i=1; $i<=5; $i++)
-                                    <option value="{{ $i }}">{{ $i }} Star</option>
-                                @endfor
-                            </select>
+                        <!-- Resources Tab -->
+                        <div class="tab-pane fade" id="resources" role="tabpanel" aria-labelledby="resources-tab">
+                            @if($currentLesson && $currentLesson->resource_files && count($currentLesson->resource_files))
+                                <ul class="list-group list-group-flush mb-3">
+                                    @foreach($currentLesson->resource_files as $resource)
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            {{ basename($resource) }}
+                                            <a href="{{ asset('storage/' . $resource) }}" 
+                                               download 
+                                               class="btn btn-sm btn-outline-primary">
+                                               Download
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p class="text-muted">No resources available.</p>
+                            @endif
+                        </div>
 
-                            <div class="mb-2">
-                                <label for="feedback">Feedback</label>
-                                <textarea name="feedback" id="feedback" class="form-control" rows="3" placeholder="Write your feedback here..."></textarea>
+                        <!-- Comments Tab -->
+                        <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                            <form method="POST" action="{{ route('student.enrolled.comment', [$course->id, $currentLesson->id]) }}">
+                                @csrf
+                                <textarea name="comment" class="form-control mb-2" rows="3" placeholder="Add a comment..."></textarea>
+                                <button type="submit" class="btn btn-sm btn-primary">Post Comment</button>
+                            </form>
+
+                            <div class="mt-3">
+                                @forelse($recentComments as $comment)
+                                    <div class="border p-2 rounded mb-2">
+                                        <strong>{{ $comment->user->name }}</strong>
+                                        <p class="mb-0">{{ $comment->content }}</p>
+                                        <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                                    </div>
+                                @empty
+                                    <p class="text-muted">No comments yet.</p>
+                                @endforelse
                             </div>
-                            
-                            <button type="submit" class="btn btn-sm btn-success">Submit Rating</button>
-                        </form>
+                        </div>
 
-                        <!-- Recent Ratings -->
-                        <div class="mt-3">
-                            <h6 class="fw-semibold">Recent Ratings</h6>
-                            @forelse($recentRatings as $rating)
-                                <div class="border p-2 rounded mb-2">
-                                    <strong>{{ $rating->user->name }}</strong> 
-                                    rated <span class="text-warning">{{ $rating->rating }} ★</span>
-                                    <p class="mb-0">{{ $rating->feedback ?? 'No feedback given.' }}</p>
+                        <!-- Ratings & Feedback Tab -->
+                        <div class="tab-pane fade" id="ratings" role="tabpanel" aria-labelledby="ratings-tab">
+                            <form method="POST" action="{{ route('student.enrolled.rate', $course->id) }}">
+                                @csrf
+                                <select name="rating" class="form-select w-25 mb-2">
+                                    <option value="">Select Rating</option>
+                                    @for($i=1; $i<=5; $i++)
+                                        <option value="{{ $i }}">{{ $i }} Star</option>
+                                    @endfor
+                                </select>
+
+                                <div class="mb-2">
+                                    <label for="feedback">Feedback</label>
+                                    <textarea name="feedback" id="feedback" class="form-control" rows="3" placeholder="Write your feedback here..."></textarea>
                                 </div>
-                            @empty
-                                <p class="text-muted">No ratings yet.</p>
-                            @endforelse
+
+                                <button type="submit" class="btn btn-sm btn-success">Submit Rating</button>
+                            </form>
+
+                            <!-- Recent Ratings -->
+                            <div class="mt-3">
+                                <h6 class="fw-semibold">Recent Ratings</h6>
+                                @forelse($recentRatings as $rating)
+                                    <div class="border p-2 rounded mb-2">
+                                        <strong>{{ $rating->user->name }}</strong> 
+                                        rated <span class="text-warning">{{ $rating->rating }} ★</span>
+                                        <p class="mb-0">{{ $rating->feedback ?? 'No feedback given.' }}</p>
+                                    </div>
+                                @empty
+                                    <p class="text-muted">No ratings yet.</p>
+                                @endforelse
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -118,28 +159,33 @@
                         @foreach($course->topics as $topic)
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="heading-{{ $topic->id }}">
-                                    <button class="accordion-button collapsed" type="button" 
-                                        data-bs-toggle="collapse" data-bs-target="#collapse-{{ $topic->id }}">
-                                        {{ $topic->title }}
+                                    <button 
+                                        class="accordion-button {{ $currentLesson && $currentLesson->topic_id == $topic->id ? '' : 'collapsed' }}" 
+                                        type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#collapse-{{ $topic->id }}">
+                                        <span class="fw-bold h6 mb-0">{{ $topic->title }}</span>
                                     </button>
                                 </h2>
-                                <div id="collapse-{{ $topic->id }}" class="accordion-collapse collapse" 
+                                <div 
+                                    id="collapse-{{ $topic->id }}" 
+                                    class="accordion-collapse collapse {{ $currentLesson && $currentLesson->topic_id == $topic->id ? 'show' : '' }}" 
                                     data-bs-parent="#courseCurriculum">
                                     <div class="accordion-body p-0">
                                         <ul class="list-group list-group-flush">
                                             @foreach($topic->lessons as $lesson)
                                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                                     <a href="{{ route('student.enrolled.lesson', [$course->id, $lesson->id]) }}" 
-                                                       class="{{ $currentLesson && $currentLesson->id == $lesson->id ? 'fw-bold text-primary' : '' }}">
+                                                    class="{{ $currentLesson && $currentLesson->id == $lesson->id ? 'fw-bold text-primary' : '' }}">
                                                         {{ $lesson->title }}
                                                     </a>
-                                                    <small class="text-muted">
+                                                    <span class="text-muted ms-2" style="white-space: nowrap;">
                                                         @if($lesson->duration < 60)
                                                             {{ $lesson->duration }} min
                                                         @else
                                                             {{ round($lesson->duration / 60, 1) }} hr
                                                         @endif
-                                                    </small>
+                                                    </span>
                                                 </li>
                                             @endforeach
                                         </ul>
