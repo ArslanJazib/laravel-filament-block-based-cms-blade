@@ -42,9 +42,11 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/billing', [BillingController::class, 'index'])->name('student.billing');
 
     // Profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('student.profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('student.profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('student.profile.destroy');
+    Route::get('profile', [ProfileController::class, 'show'])->name('student.profile.show');
+    Route::get('profile/edit', [ProfileController::class, 'edit'])->name('student.profile.edit');
+    Route::post('profile/update', [ProfileController::class, 'update'])->name('student.profile.update');
+    Route::post('profile/update-password', [ProfileController::class, 'updatePassword'])->name('student.profile.updatePassword');
+    Route::post('profile/update-security', [ProfileController::class, 'updateSecurity'])->name('student.profile.updateSecurity');
 
     // Streaming (secured for logged-in users only)
     Route::get('/stream/{filename}', [StreamingController::class, 'stream'])->name('video.stream');

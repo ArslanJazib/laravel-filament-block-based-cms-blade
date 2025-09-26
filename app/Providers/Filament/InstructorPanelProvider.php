@@ -29,6 +29,7 @@ class InstructorPanelProvider extends PanelProvider
             ->id('instructor')
             ->path('instructor')
             ->login()
+            ->authGuard('instructor')
             ->colors([
                 'primary' => Color::Indigo,
             ])

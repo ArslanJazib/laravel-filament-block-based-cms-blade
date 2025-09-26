@@ -24,7 +24,22 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Perform validation & attempt login
         $request->authenticate();
+
+        $user = $request->user();
+
+        // Prevent non-student roles from logging into Breeze (web guard)
+        if ($user->hasAnyRole(['admin', 'instructor', 'content-manager'])) {
+            Auth::guard('web')->logout();
+
+            return back()->withErrors([
+                'email' => 'This account cannot log in from the student portal.',
+            ]);
+        }
+
+        // Force login with the "web" guard only
+        Auth::guard('web')->login($user);
 
         $request->session()->regenerate();
 

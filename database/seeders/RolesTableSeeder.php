@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class RolesTableSeeder extends Seeder
 {
@@ -14,24 +13,25 @@ class RolesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        // Disable foreign key checks temporarily to avoid issues with existing data
-        // if this seeder is run multiple times or in a specific order.
+        // Disable foreign key checks temporarily
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // Clear existing data in the 'countries' table to prevent duplicate entries
-        // if the seeder is run multiple times.
+        // Truncate the roles table to avoid duplicates
         DB::table('roles')->truncate();
 
+        // Define roles with their respective guards
         $roles = [
-            'admin',
-            'content-manager',
-            'instructor',
-            'user',
-            'guest',
+            ['name' => 'admin', 'guard_name' => 'admin'],
+            ['name' => 'content-manager', 'guard_name' => 'content-manager'],
+            ['name' => 'instructor', 'guard_name' => 'instructor'],
+            ['name' => 'user', 'guard_name' => 'web'],
+            ['name' => 'guest', 'guard_name' => 'web'],
         ];
 
         foreach ($roles as $role) {
-            Role::firstOrCreate(['name' => $role]);
+            Role::firstOrCreate(
+                ['name' => $role['name'], 'guard_name' => $role['guard_name']]
+            );
         }
     }
 }

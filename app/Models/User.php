@@ -23,6 +23,11 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'phone',
+        'security_questions',
+        'company_name',
+        'job_title',
+        'country_id'
     ];
 
     /**
@@ -64,5 +69,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Course::class, 'enrollments', 'student_id', 'course_id')
             ->withTimestamps()
             ->withPivot(['enrolled_at']);
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
     }
 }

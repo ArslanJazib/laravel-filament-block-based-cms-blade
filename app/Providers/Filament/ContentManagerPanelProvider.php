@@ -31,6 +31,7 @@ class ContentManagerPanelProvider extends PanelProvider
             ->id('content-manager')
             ->path('content-manager')
             ->login()
+            ->authGuard('content-manager')
             ->colors([
                 'primary' => Color::Cyan,
             ])

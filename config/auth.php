@@ -44,6 +44,19 @@ return [
         'admin' => [
             'driver' => 'session',
             'provider' => 'users',
+            'session' => 'admin_session',
+        ],
+
+        'content-manager' => [
+            'driver' => 'session',
+            'provider' => 'users',
+            'session' => 'content_manager_session',
+        ],
+
+        'instructor' => [
+            'driver' => 'session',
+            'provider' => 'users',
+            'session' => 'instructor_session',
         ],
     ],
 

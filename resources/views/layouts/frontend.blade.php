@@ -91,7 +91,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>
-                            <a class="dropdown-item" href="{{ route('student.profile.edit') }}">
+                            <a class="dropdown-item" href="{{ route('student.profile.show') }}">
                                 <i class="bi bi-person-lines-fill me-2"></i> Profile
                             </a>
                         </li>
