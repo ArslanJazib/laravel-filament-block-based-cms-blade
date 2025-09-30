@@ -20,7 +20,12 @@ class EnrollmentsRelationManager extends RelationManager
                 ->relationship(
                     name: 'student',
                     titleAttribute: 'name',
-                    modifyQueryUsing: fn ($query) => $query->role('user')
+                    modifyQueryUsing: function ($query) {
+                        $query->whereHas('roles', function ($q) {
+                            $q->where('name', 'user')
+                            ->where('guard_name', 'web');
+                        });
+                    }
                 )
                 ->searchable()
                 ->preload()

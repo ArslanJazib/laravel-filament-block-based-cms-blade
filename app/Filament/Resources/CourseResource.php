@@ -52,7 +52,12 @@ class CourseResource extends Resource
                 ->relationship(
                     name: 'instructor',
                     titleAttribute: 'name',
-                    modifyQueryUsing: fn ($query) => $query->role('instructor')
+                    modifyQueryUsing: function ($query) {
+                        $query->whereHas('roles', function ($q) {
+                            $q->where('name', 'instructor')
+                            ->where('guard_name', 'instructor');
+                        });
+                    }
                 )
                 ->searchable()
                 ->preload()
