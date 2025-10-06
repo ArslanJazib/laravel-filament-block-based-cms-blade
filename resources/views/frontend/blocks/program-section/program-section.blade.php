@@ -29,13 +29,25 @@
     $classMap = $categories->pluck('slug')->toArray();
 
     $resolveImage = function ($img) use ($blockSlug) {
+        // If $img is empty, return null
         if (empty($img)) {
             return null;
         }
-        if (preg_match('#^https?://#', $img) || str_starts_with($img, '/')) {
-            return $img;
+
+        // If $img is an array, get first element safely
+        $mediaId = isset($img[0]) ? $img[0] : (is_numeric($img) ? $img : null);
+
+        if (empty($mediaId)) {
+            return null;
         }
-        return asset("storage/" . ltrim($img, '/'));
+
+        // Try fetching Spatie Media by ID
+        $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::find($mediaId);
+        if ($media) {
+            return $media->getUrl();
+        }
+
+        return null; // Fallback if not found
     };
 
 @endphp

@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CourseResource\Pages;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use App\Filament\Resources\CourseResource\RelationManagers\TopicsRelationManager;
 use App\Filament\Resources\CourseResource\RelationManagers\LessonsRelationManager;
 use App\Filament\Resources\CourseResource\RelationManagers\EnrollmentsRelationManager;
@@ -62,23 +63,22 @@ class CourseResource extends Resource
                 ->searchable()
                 ->preload()
                 ->required(),
-            Forms\Components\FileUpload::make('thumbnail')
+            SpatieMediaLibraryFileUpload::make('thumbnail')
+                ->collection('course-thumbnails')
                 ->image()
-                ->directory('courses')
+                ->responsiveImages()
                 ->nullable(),
-            Forms\Components\FileUpload::make('intro_video')
-                ->label('Introductory Video')
+            SpatieMediaLibraryFileUpload::make('intro_video')
+                ->collection('course-videos')
                 ->preserveFilenames()
-                ->directory('courses')
                 ->maxSize(204800) // 200MB
                 ->acceptedFileTypes([
                     'video/mp4',
-                    'video/quicktime',   // mov
-                    'video/x-msvideo',   // avi
-                    'video/x-matroska',  // mkv
+                    'video/quicktime',
+                    'video/x-msvideo',
+                    'video/x-matroska',
                 ])
-                ->nullable()
-                ->multiple(false),
+                ->nullable(),
             Forms\Components\TextInput::make('price')
                 ->numeric()
                 ->minValue(0)
@@ -94,7 +94,10 @@ class CourseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\ImageColumn::make('thumbnail'),
+            Tables\Columns\SpatieMediaLibraryImageColumn::make('thumbnail')
+                ->collection('course-thumbnails')
+                ->label('Thumbnail')
+                ->conversion('thumb'),
             Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
             Tables\Columns\TextColumn::make('category.name')->label('Category'),
             Tables\Columns\TextColumn::make('instructor.name')->label('Instructor'),

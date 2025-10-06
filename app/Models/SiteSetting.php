@@ -2,10 +2,16 @@
 
 namespace App\Models;
 
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class SiteSetting extends Model
+class SiteSetting extends Model implements HasMedia
 {
+    use HasFactory, InteractsWithMedia;
+
     protected $fillable = [
         'site_title',
         'favicon',
@@ -27,4 +33,15 @@ class SiteSetting extends Model
         'header_menu' => 'array',
         'footer_menu' => 'array',
     ];
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('favicons')->useDisk('public');
+        $this->addMediaCollection('site_logos')->useDisk('public');
+    }
+
+    public function registerMediaConversions(Media $media = null): void
+    {
+
+    }
 }

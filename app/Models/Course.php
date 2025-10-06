@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use App\Models\Enrollment;
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Course extends Model
+class Course extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = ['category_id', 'instructor_id', 'title', 'slug', 'description', 'status', 'thumbnail', 'intro_video', 'price'];
 
@@ -60,6 +63,17 @@ class Course extends Model
             ->latest()
             ->take($limit)
             ->get();
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('course-thumbnails')->useDisk('public');
+        $this->addMediaCollection('course-videos')->useDisk('public');
+    }
+
+    public function registerMediaConversions(Media $media = null): void
+    {
+
     }
 }
 

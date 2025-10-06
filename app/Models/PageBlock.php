@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PageBlock extends Model
+class PageBlock extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['page_id', 'block_id', 'content', 'sort_order'];
+    protected $fillable = ['uuid','page_id', 'block_id', 'content', 'sort_order'];
 
     protected $casts = [
         'content' => 'array',

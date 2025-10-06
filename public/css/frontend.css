@@ -133,8 +133,8 @@
   .body-btn:hover { background: #28a745; }
   .soul-btn { background: #ff7eb3; color: #fff; }
   .soul-btn:hover { background: #e7659c; }
-  .entrepreneur-btn { background: #ff9500; color: #fff; }
-  .entrepreneur-btn:hover { background: #e27f00; }
+  .entrepreneurship-btn { background: #ff9500; color: #fff; }
+  .entrepreneurship-btn:hover { background: #e27f00; }
 
     /* Program Cards */
     .program-cards {
@@ -229,4 +229,20 @@
   width: 100%;
   height: auto;
   aspect-ratio: 16/9;
+}
+
+.footer-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.footer-menu li {
+    margin: 4px 0;
+}
+
+.footer-menu li a {
+    text-decoration: none;
+    color: inherit;
 }

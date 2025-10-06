@@ -18,7 +18,8 @@ class CategoryResource extends Resource
     protected static ?string $model = Category::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-bookmark-square';
-    protected static ?string $navigationLabel = 'Program Categories';
+    protected static ?string $navigationLabel = 'Course Categories';
+    protected static ?string $navigationGroup = 'LMS Management';
 
     public static function form(Form $form): Form
     {
@@ -44,10 +45,14 @@ class CategoryResource extends Resource
                         ->searchable()
                         ->nullable(),
 
-                    Forms\Components\FileUpload::make('featured_image')
+                    Forms\Components\SpatieMediaLibraryFileUpload::make('featured_image')
                         ->label('Featured Image')
+                        ->collection('course_category_images')
+                        ->directory('course-categories')
                         ->image()
-                        ->directory('blocks/categories/images')
+                        ->imageEditor()
+                        ->downloadable()
+                        ->openable()
                         ->maxSize(2048),
                 ]),
 

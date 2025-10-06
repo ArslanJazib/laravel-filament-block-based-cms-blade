@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Category extends Model
+class Category extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'name',
@@ -33,5 +36,16 @@ class Category extends Model
     public function courses()
     {
         return $this->hasMany(Course::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('course_category_images')
+        ->useDisk('public');
+    }
+
+    public function registerMediaConversions(Media $media = null): void
+    {
+
     }
 }

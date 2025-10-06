@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SiteSettingResource\Pages;
-use App\Filament\Resources\SiteSettingResource\RelationManagers;
-use App\Models\SiteSetting;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\SiteSetting;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\SiteSettingResource\Pages;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use App\Filament\Resources\SiteSettingResource\RelationManagers;
 
 class SiteSettingResource extends Resource
 {
@@ -33,59 +34,59 @@ class SiteSettingResource extends Resource
                             ->maxLength(191)
                             ->default('My Site'),
 
-                        Forms\Components\FileUpload::make('favicon')
-                            ->label('Favicon')
-                            ->directory('assets/images')
-                            ->disk('public')
-                            ->preserveFilenames()
-                            ->image(),
-
-                        Forms\Components\FileUpload::make('favicon_16x16')
-                            ->label('Favicon 16x16')
-                            ->directory('assets/images')
-                            ->disk('public')
-                            ->preserveFilenames()
-                            ->image(),
-
-                        Forms\Components\FileUpload::make('favicon_32x32')
-                            ->label('Favicon 32x32')
-                            ->directory('assets/images')
-                            ->disk('public')
-                            ->preserveFilenames()
-                            ->image(),
-
-                        Forms\Components\FileUpload::make('logo')
-                            ->label('Logo')
-                            ->directory('assets/images')
-                            ->disk('public')
-                            ->preserveFilenames()
-                            ->image(),
-
-                        Forms\Components\FileUpload::make('apple_touch_icon')
-                            ->label('Apple Touch Icon')
-                            ->directory('assets/images')
-                            ->disk('public')
-                            ->preserveFilenames()
-                            ->image(),
-
-                        Forms\Components\FileUpload::make('android_chrome_512x512')
-                            ->label('Android Chrome 512x512')
-                            ->directory('assets/images')
-                            ->disk('public')
-                            ->preserveFilenames()
-                            ->image(),
-
-                        Forms\Components\FileUpload::make('android_chrome_192x192')
-                            ->label('Android Chrome 192x192')
-                            ->directory('assets/images')
-                            ->disk('public')
-                            ->preserveFilenames()
-                            ->image(),
+                SpatieMediaLibraryFileUpload::make('favicon')
+                    ->collection('favicons')
+                    ->preserveFilenames()
+                    ->label('Favicon')
+                    ->image()
+                    ->maxFiles(1),
 
 
-                        Forms\Components\Textarea::make('google_tag_manager')
-                            ->label('Google Tag Manager Code')
-                            ->columnSpanFull(),
+                SpatieMediaLibraryFileUpload::make('favicon_16x16')
+                    ->collection('favicons_16x16')
+                    ->preserveFilenames()
+                    ->label('Favicon 16x16')
+                    ->image()
+                    ->maxFiles(1),
+
+                SpatieMediaLibraryFileUpload::make('favicon_32x32')
+                    ->collection('favicons_32x32')
+                    ->preserveFilenames()
+                    ->label('Favicon 32x32')
+                    ->image()
+                    ->maxFiles(1),
+
+                SpatieMediaLibraryFileUpload::make('logo')
+                    ->collection('site_logos')
+                    ->preserveFilenames()
+                    ->label('Logo')
+                    ->image()
+                    ->maxFiles(1),
+
+                SpatieMediaLibraryFileUpload::make('apple_touch_icon')
+                    ->collection('apple_touch_icons')
+                    ->preserveFilenames()
+                    ->label('Apple Touch Icon')
+                    ->image()
+                    ->maxFiles(1),
+
+                SpatieMediaLibraryFileUpload::make('android_chrome_512x512')
+                    ->collection('android_chrome_icons_512x512')
+                    ->preserveFilenames()
+                    ->label('Android Chrome 512x512')
+                    ->image()
+                    ->maxFiles(1),
+
+                SpatieMediaLibraryFileUpload::make('android_chrome_192x192')
+                    ->collection('android_chrome_icons_192x192')
+                    ->preserveFilenames()
+                    ->label('Android Chrome 192x192')
+                    ->image()
+                    ->maxFiles(1),
+
+                Forms\Components\Textarea::make('google_tag_manager')
+                    ->label('Google Tag Manager Code')
+                    ->columnSpanFull(),
                     ]),
 
                 Forms\Components\Section::make('Header Menu')

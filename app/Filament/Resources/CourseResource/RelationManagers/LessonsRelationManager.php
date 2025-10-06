@@ -7,6 +7,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class LessonsRelationManager extends RelationManager
 {
@@ -66,11 +67,11 @@ class LessonsRelationManager extends RelationManager
                         ])
                         ->nullable(),
 
-                    // Video & Resources Card (right side)
+                    // Media uploads
                     Forms\Components\Card::make([
-                        Forms\Components\FileUpload::make('video_url')
+                        SpatieMediaLibraryFileUpload::make('video_url')
                             ->label('Video File')
-                            ->directory('lessons/videos')
+                            ->collection('lesson-videos')
                             ->preserveFilenames()
                             ->maxSize(204800) // 200MB
                             ->acceptedFileTypes([
@@ -82,9 +83,9 @@ class LessonsRelationManager extends RelationManager
                             ->nullable()
                             ->multiple(false),
 
-                        Forms\Components\FileUpload::make('resource_files')
+                        SpatieMediaLibraryFileUpload::make('resource_files')
                             ->label('Lesson Resources')
-                            ->directory('lessons/resources')
+                            ->collection('lesson-resources')
                             ->preserveFilenames()
                             ->multiple()
                             ->downloadable()

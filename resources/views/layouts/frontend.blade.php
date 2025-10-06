@@ -6,18 +6,10 @@
     <title>{{ $siteSettings->meta_title ?? 'KANDOR - Transform Your Life' }}</title>
 
     {{-- Favicons --}}
-    @if($siteSettings->favicon)
-        <link rel="icon" href="{{ asset('storage/' . $siteSettings->favicon) }}">
-    @endif
-    @if($siteSettings->favicon_16x16)
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('storage/' . $siteSettings->favicon_16x16) }}">
-    @endif
-    @if($siteSettings->favicon_32x32)
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/' . $siteSettings->favicon_32x32) }}">
-    @endif
-    @if($siteSettings->apple_touch_icon)
-        <link rel="apple-touch-icon" href="{{ asset('storage/' . $siteSettings->apple_touch_icon) }}">
-    @endif
+    <link rel="icon" href="{{ $siteSettings->getFirstMediaUrl('favicons') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ $siteSettings->getFirstMediaUrl('favicons_16x16') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ $siteSettings->getFirstMediaUrl('favicons_32x32') }}">
+    <link rel="apple-touch-icon" href="{{ $siteSettings->getFirstMediaUrl('apple_touch_icons') }}">
 
     {{-- SEO Meta --}}
     <meta name="description" content="{{ $siteSettings->meta_description }}">
@@ -56,8 +48,8 @@
         {{-- Logo --}}
         <a href="{{ route('frontend.home') }}">
             <div class="logo">
-                @if(!empty($siteSettings->logo))
-                    <img src="{{ asset('storage/' . $siteSettings->logo) }}" 
+                @if($siteSettings->getFirstMediaUrl('site_logos'))
+                    <img src="{{ $siteSettings->getFirstMediaUrl('site_logos') }}" 
                         alt="{{ $siteSettings->site_title ?? 'KANDOR' }}">
                 @else
                     {{ $siteSettings->site_title ?? 'KANDOR' }}
@@ -131,7 +123,7 @@
 
     {{-- Footer --}}
     <footer>
-        <ul>
+        <ul class="footer-menu">
             @foreach($siteSettings->footer_menu ?? [] as $menuItem)
                 <li><a href="{{ $menuItem['url'] }}">{{ $menuItem['label'] }}</a></li>
             @endforeach
