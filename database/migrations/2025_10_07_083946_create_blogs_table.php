@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
-            $table->longText('content');
-            $table->string('thumbnail')->nullable();
-            $table->foreignId('author_id')->nullable()->constrained('users')->cascadeOnDelete();
-            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
-            $table->boolean('is_published')->default(false);
+            $table->text('excerpt')->nullable();
+            $table->longText('content')->nullable();
+            $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+            $table->foreignId('author_id')->constrained('users')->cascadeOnDelete()->nullable();
+            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });

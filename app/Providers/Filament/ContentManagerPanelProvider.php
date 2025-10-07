@@ -20,8 +20,12 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 // import only the resources you want for Content Manager
 use App\Filament\Resources\PageResource;
 use App\Filament\Resources\BlockResource;
+use App\Filament\Resources\BlogCategoryResource;
+use App\Filament\Resources\BlogResource;
 use App\Filament\Resources\CategoryResource;
+use App\Filament\Resources\MediaResource;
 use App\Filament\Resources\SiteSettingResource;
+use App\Filament\Resources\TagResource;
 
 class ContentManagerPanelProvider extends PanelProvider
 {
@@ -38,7 +42,10 @@ class ContentManagerPanelProvider extends PanelProvider
             ->resources([
                 PageResource::class,
                 BlockResource::class,
-                CategoryResource::class,
+                BlogResource::class,
+                BlogCategoryResource::class,
+                TagResource::class,
+                MediaResource::class,
                 SiteSettingResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

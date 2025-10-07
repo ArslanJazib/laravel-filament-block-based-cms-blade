@@ -21,6 +21,7 @@ class CourseResource extends Resource
     protected static ?string $model = Course::class;
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
     protected static ?string $navigationGroup = 'LMS Management';
+    protected static ?int $navigationSort = 1;
 
     public static function getEloquentQuery(): Builder
     {
