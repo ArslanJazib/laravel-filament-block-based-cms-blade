@@ -3,6 +3,32 @@
 @section('title', $course->title)
 
 @section('content')
+@php
+    use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+    // Course Thumbnail
+    $courseThumbnail = null;
+    if (!empty($course->thumbnail)) {
+        if (is_numeric($course->thumbnail)) {
+            $media = Media::find($course->thumbnail);
+            if ($media) $courseThumbnail = $media->getUrl();
+        } else {
+            $courseThumbnail = asset('storage/' . $course->thumbnail);
+        }
+    }
+
+    // Course Intro Video
+    $courseIntroVideo = null;
+    if (!empty($course->intro_video)) {
+        if (is_numeric($course->intro_video)) {
+            $media = Media::find($course->intro_video);
+            if ($media) $courseIntroVideo = $media->getUrl();
+        } else {
+            $courseIntroVideo = asset('storage/' . $course->intro_video);
+        }
+    }
+@endphp
+
 <div class="container py-5">
     <div class="row">
         <!-- Left Column -->
@@ -16,9 +42,9 @@
             </p>
 
             <div class="mb-4">
-                @if($course->intro_video)
+                @if($courseIntroVideo)
                     <video class="w-100 rounded shadow-sm" controls>
-                        <source src="{{ asset('storage/' . $course->intro_video) }}" type="video/mp4">
+                        <source src="{{ $courseIntroVideo }}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 @else
@@ -118,8 +144,9 @@
         <!-- Right Sidebar -->
         <div class="col-lg-4">
             <div class="card shadow-sm sticky-top" style="top: 20px;">
-                <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="{{ $course->title }}"
-                     class="card-img-top">
+                @if($courseThumbnail)
+                    <img src="{{ $courseThumbnail }}" alt="{{ $course->title }}" class="card-img-top">
+                @endif
 
                 <div class="card-body">
                     <h3 class="fw-bold text-primary mb-3">

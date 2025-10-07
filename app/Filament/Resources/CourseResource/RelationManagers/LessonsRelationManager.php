@@ -8,6 +8,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Illuminate\Database\Eloquent\Model;
 
 class LessonsRelationManager extends RelationManager
 {
@@ -51,34 +52,30 @@ class LessonsRelationManager extends RelationManager
             // Main Content Grid
             Forms\Components\Grid::make(2)
                 ->schema([
-                    // RichEditor - Full Width & Tall
                     Forms\Components\RichEditor::make('content')
                         ->label('Lesson Notes')
                         ->required()
                         ->toolbarButtons([
-                            'bold','italic','underline','strike',
-                            'h2','h3','h4','blockquote','codeBlock',
-                            'bulletList','orderedList','link','image','redo','undo','hr',
+                            'bold', 'italic', 'underline', 'strike',
+                            'h2', 'h3', 'h4', 'blockquote', 'codeBlock',
+                            'bulletList', 'orderedList', 'link', 'image', 'redo', 'undo', 'hr',
                         ])
                         ->disableAllToolbarButtons(false)
-                        ->columnSpan(2) // full width
-                        ->extraAttributes([
-                            'style' => 'min-height: 600px;'
-                        ])
+                        ->columnSpan(2)
+                        ->extraAttributes(['style' => 'min-height: 600px;'])
                         ->nullable(),
 
-                    // Media uploads
                     Forms\Components\Card::make([
                         SpatieMediaLibraryFileUpload::make('video_url')
                             ->label('Video File')
                             ->collection('lesson-videos')
                             ->preserveFilenames()
-                            ->maxSize(204800) // 200MB
+                            ->maxSize(204800)
                             ->acceptedFileTypes([
                                 'video/mp4',
-                                'video/quicktime',   // mov
-                                'video/x-msvideo',   // avi
-                                'video/x-matroska',  // mkv
+                                'video/quicktime',
+                                'video/x-msvideo',
+                                'video/x-matroska',
                             ])
                             ->nullable()
                             ->multiple(false),
@@ -121,11 +118,40 @@ class LessonsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('created_at')->dateTime(),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->mutateFormDataUsing(fn(array $data): array => $this->mutateLessonFormData($data))
+                    ->after(fn(Model $record) => $this->syncLessonMedia($record)),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->mutateFormDataUsing(fn(array $data): array => $this->mutateLessonFormData($data))
+                    ->after(fn(Model $record) => $this->syncLessonMedia($record)),
+
                 Tables\Actions\DeleteAction::make(),
             ]);
+    }
+
+    protected function mutateLessonFormData(array $data): array
+    {
+        // You can safely adjust lesson data here if needed
+        return $data;
+    }
+
+    protected function syncLessonMedia(Model $record): void
+    {
+        $mediaMap = [
+            'video_url' => 'lesson-videos',
+            'resource_files' => 'lesson-resources',
+        ];
+
+        foreach ($mediaMap as $column => $collection) {
+            $mediaItems = $record->getMedia($collection);
+
+            $record->update([
+                $column => $column === 'resource_files'
+                    ? $mediaItems->pluck('id')->toArray()
+                    : optional($mediaItems->first())->id,
+            ]);
+        }
     }
 }

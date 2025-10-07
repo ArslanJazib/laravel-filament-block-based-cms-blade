@@ -3,6 +3,23 @@
 @section('title', $course->title . ' - Enrolled')
 
 @section('content')
+
+@php
+    use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+    $lessonVideoUrl = null;
+    if ($currentLesson && $currentLesson->video_url) {
+        // If stored as media ID
+        if (is_numeric($currentLesson->video_url)) {
+            $media = Media::find($currentLesson->video_url);
+            if ($media) {
+                $lessonVideoUrl = route('video.stream', ['mediaId' => $media->id]);
+            }
+        }
+    }
+
+@endphp
+
 <div class="container-fluid py-4">
     <div class="row">
         <!-- Left Content Area -->
@@ -14,7 +31,7 @@
                         {{ $currentLesson->title ?? $course->title }}
                     </h4>
 
-                    @if($currentLesson && $currentLesson->video_url)
+                    @if($lessonVideoUrl)
                         <div class="mb-3 w-100">
                             <video
                                 id="lesson-video"
@@ -25,7 +42,7 @@
                                 height="360"
                                 data-setup="{}"
                             >
-                                <source src="{{ route('video.stream', ['filename' => basename($currentLesson->video_url)]) }}" type="video/mp4">
+                                <source src="{{ $lessonVideoUrl }}" type="video/mp4">
                             </video>
                         </div>
                     @else
@@ -73,17 +90,29 @@
 
                         <!-- Resources Tab -->
                         <div class="tab-pane fade" id="resources" role="tabpanel" aria-labelledby="resources-tab">
-                            @if($currentLesson && $currentLesson->resource_files && count($currentLesson->resource_files))
+                            @if($currentLesson && !empty($currentLesson->resource_files))
                                 <ul class="list-group list-group-flush mb-3">
                                     @foreach($currentLesson->resource_files as $resource)
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            {{ basename($resource) }}
-                                            <a href="{{ asset('storage/' . $resource) }}" 
-                                               download 
-                                               class="btn btn-sm btn-outline-primary">
-                                               Download
-                                            </a>
-                                        </li>
+                                        @php
+                                            $resourceUrl = null;
+                                            if (is_numeric($resource)) {
+                                                $media = Media::find($resource);
+                                                if ($media) {
+                                                    $resourceUrl = $media->getUrl();
+                                                    $resourceName = $media->file_name;
+                                                }
+                                            }
+                                        @endphp
+                                        @if($resourceUrl)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                {{ $resourceName }}
+                                                <a href="{{ $resourceUrl }}" 
+                                                download 
+                                                class="btn btn-sm btn-outline-primary">
+                                                Download
+                                                </a>
+                                            </li>
+                                        @endif
                                     @endforeach
                                 </ul>
                             @else

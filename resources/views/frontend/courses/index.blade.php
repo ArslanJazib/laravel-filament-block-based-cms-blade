@@ -3,6 +3,10 @@
 @section('title', 'Courses')
 
 @section('content')
+@php
+    use Spatie\MediaLibrary\MediaCollections\Models\Media;
+@endphp
+
 <div class="container py-5">
     <h1 class="mb-4 fw-bold">Browse Courses</h1>
 
@@ -37,11 +41,27 @@
     <!-- Course Grid -->
     <div class="row g-4">
         @forelse($courses as $course)
+            @php
+                // Default thumbnail path
+                $thumbnailUrl = asset('images/default-course.jpg');
+
+                // If thumbnail is stored as media ID, resolve it via Spatie
+                if (!empty($course->thumbnail)) {
+                    $media = Media::find($course->thumbnail);
+                    if ($media) {
+                        $thumbnailUrl = $media->getUrl();
+                    }
+                }
+            @endphp
+
             <div class="col-md-4">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="{{ $course->title }}"
-                         class="card-img-top" 
-                         alt="{{ $course->title }}">
+                    <img 
+                        src="{{ $thumbnailUrl }}" 
+                        alt="{{ $course->title }}"
+                        class="card-img-top" 
+                        style="object-fit: cover; height: 220px;"
+                    >
 
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title fw-semibold">

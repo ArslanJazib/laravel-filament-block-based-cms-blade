@@ -3,6 +3,10 @@
 @section('title', 'My Courses')
 
 @section('content')
+@php
+    use Spatie\MediaLibrary\MediaCollections\Models\Media;
+@endphp
+
 <div class="container py-5">
     <h2 class="fw-bold mb-4">My Learning</h2>
 
@@ -17,16 +21,28 @@
 
         <div class="row g-4">
             @foreach($courses as $course)
+                @php
+                    // Resolve course image from Spatie Media Library
+                    $thumbnailUrl = null;
+                    if (!empty($course->thumbnail) && is_numeric($course->thumbnail)) {
+                        $media = Media::find($course->thumbnail);
+                        if ($media) {
+                            $thumbnailUrl = $media->getUrl();
+                        }
+                    }
+
+                    // Fallback image
+                    if (!$thumbnailUrl) {
+                        $thumbnailUrl = asset('images/course-placeholder.jpg');
+                    }
+                @endphp
+
                 <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
+                    <div class="card h-100 shadow-sm border-0">
                         <!-- Thumbnail -->
-                        @if($course->thumbnail)
-                            <img src="{{ asset('storage/' . $course->thumbnail) }}" 
-                                 class="card-img-top" alt="{{ $course->title }}">
-                        @else
-                            <img src="{{ asset('images/course-placeholder.jpg') }}" 
-                                 class="card-img-top" alt="Course Placeholder">
-                        @endif
+                        <img src="{{ $thumbnailUrl }}" 
+                             class="card-img-top" 
+                             alt="{{ $course->title }}">
 
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title mb-2">{{ $course->title }}</h5>

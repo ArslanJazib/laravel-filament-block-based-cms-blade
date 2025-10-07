@@ -49,7 +49,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('profile/update-security', [ProfileController::class, 'updateSecurity'])->name('student.profile.updateSecurity');
 
     // Streaming (secured for logged-in users only)
-    Route::get('/stream/{filename}', [StreamingController::class, 'stream'])->name('video.stream');
+    Route::get('/stream/', [StreamingController::class, 'stream'])->name('video.stream');
 });
 
 // --------------------

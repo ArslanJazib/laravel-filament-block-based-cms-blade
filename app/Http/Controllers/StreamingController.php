@@ -3,16 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class StreamingController extends Controller
 {
-    public function stream(Request $request, $filename)
+    public function stream(Request $request)
     {
-        $filePath = public_path('storage/courses/' . $filename);
+        $mediaId   = $request->query('mediaId');
 
-        if (!file_exists($filePath)) {
-            abort(404, "Video not found");
+        if ($mediaId) {
+            $media = Media::find($mediaId);
+            if (!$media || !file_exists($media->getPath())) {
+                abort(404, "Video not found");
+            }
+            $filePath = $media->getPath();
+        } else {
+            abort(404, "Video not specified");
         }
 
         $fileSize  = filesize($filePath);

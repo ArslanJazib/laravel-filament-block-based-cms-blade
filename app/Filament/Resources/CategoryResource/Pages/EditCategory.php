@@ -16,4 +16,21 @@ class EditCategory extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $record = $this->record;
+
+        $mediaFields = [
+            'featured_image' => 'course_category_images',
+        ];
+
+        foreach ($mediaFields as $column => $collection) {
+            $mediaItem = $record->getFirstMedia($collection);
+
+            $data[$column] = $mediaItem ? $mediaItem->id : null;
+        }
+
+        return $data;
+    }
 }
