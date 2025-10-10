@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\StreamingController;
@@ -20,6 +21,13 @@ Route::prefix('courses')->group(function () {
     Route::get('/', [CourseController::class, 'index'])->name('courses.index');
     Route::get('/{slug}', [CourseController::class, 'show'])->name('courses.show');
 });
+
+Route::prefix('blogs')->group(function () {
+    Route::get('/', [BlogController::class, 'index'])->name('blogs.index');
+    Route::get('/{slug}', [BlogController::class, 'show'])->name('blogs.show');
+});
+
+Route::get('/category/{slug}', [BlogController::class, 'category'])->name('blogs.category');
 
 // --------------------
 // Student Area (auth + role:user)

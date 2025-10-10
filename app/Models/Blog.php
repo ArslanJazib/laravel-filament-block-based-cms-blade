@@ -27,7 +27,7 @@ class Blog extends Model implements HasMedia
     }
 
     public function category() {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(BlogCategory::class);
     }
 
     public function tags() {
