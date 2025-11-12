@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AgentTasksController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FrontendController;
@@ -64,3 +65,13 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 // Auth (Breeze)
 // --------------------
 require __DIR__ . '/auth.php';
+
+// Agentic video generation
+Route::middleware(['auth'])->group(function () {
+    Route::post('/agent/lessons/{lesson}/video', [AgentTasksController::class, 'renderLessonVideo'])->name('agent.lesson.video');
+    Route::post('/agent/video/status', [AgentTasksController::class, 'renderStatus'])->name('agent.video.status');
+    Route::post('/agent/courses/{course}/outline', [AgentTasksController::class, 'generateCourseOutline'])->name('agent.course.outline');
+    Route::post('/agent/courses/{course}/thumbnail', [AgentTasksController::class, 'generateCourseThumbnail'])->name('agent.course.thumbnail');
+    Route::post('/agent/courses/{course}/intro-video', [AgentTasksController::class, 'generateCourseIntroVideo'])->name('agent.course.intro');
+    Route::post('/agent/lessons/{lesson}/enhance', [AgentTasksController::class, 'enhanceLesson'])->name('agent.lesson.enhance');
+});

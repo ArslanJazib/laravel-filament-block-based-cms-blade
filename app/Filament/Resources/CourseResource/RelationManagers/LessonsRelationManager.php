@@ -9,6 +9,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Http;
 
 class LessonsRelationManager extends RelationManager
 {
@@ -128,6 +130,41 @@ class LessonsRelationManager extends RelationManager
                     ->after(fn(Model $record) => $this->syncLessonMedia($record)),
 
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('renderVideo')
+                    ->label('AI: Render Video')
+                    ->icon('heroicon-o-film')
+                    ->action(function (Model $record) {
+                        $response = Http::asJson()->post(route('agent.lesson.video', ['lesson' => $record->id]), [
+                            'title' => $record->title,
+                            'script' => (string) $record->content,
+                            'slides' => [],
+                        ]);
+                        if ($response->successful()) {
+                            $job = $response->json();
+                            Notification::make()->title('Video job queued')->body(isset($job['job_id']) ? 'Job: '.$job['job_id'] : 'Queued')->success()->send();
+                            if (isset($job['job_id'])) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Tracking render...')
+                                    ->body('Open the drawer to view progress')
+                                    ->send();
+                            }
+                        } else {
+                            Notification::make()->title('Video render failed')->danger()->send();
+                        }
+                    })
+                    ->requiresConfirmation(),
+                Tables\Actions\Action::make('enhanceLesson')
+                    ->label('AI: Enhance Lesson')
+                    ->icon('heroicon-o-sparkles')
+                    ->action(function (Model $record) {
+                        $response = Http::asJson()->post(route('agent.lesson.enhance', ['lesson' => $record->id]));
+                        if ($response->successful()) {
+                            Notification::make()->title('Lesson enhanced')->success()->send();
+                        } else {
+                            Notification::make()->title('Enhancement failed')->danger()->send();
+                        }
+                    })
+                    ->requiresConfirmation()
             ]);
     }
 
